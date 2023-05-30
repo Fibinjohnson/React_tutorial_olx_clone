@@ -1,48 +1,47 @@
 import React,{useEffect, useState,useContext} from 'react';
 import { db } from '../../firebase/config';
 import Heart from '../../assets/Heart';
-import './Post.css';
+import './SearchBar.css'
 import { PostContext } from '../../Context/PostContext';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { SearchContext } from '../../Context/SearchContext';
 
-function Posts() {
-  const [products,setProducts]=useState([]);
-  const history=useHistory();
-  const {setPostDetails}=useContext(PostContext);
-
-  useEffect(()=>{db.collection('products').get().then((snapshot)=>{
-    const allPost=snapshot.docs.map((product)=> { return {
-       
-        ...product.data(),
-       ids: product.id, 
-      }
-      
+function Searchbar() {
+    const [products,setProducts]=useState([]);
+    const history=useHistory();
+    const {postDetails,setPostDetails}=useContext(PostContext);
     
-    
-      
+    const {setStatus,searchValue}=useContext(SearchContext);
+  
+    useEffect(()=>{db.collection('products').get().then((snapshot)=>{
+      const allPost=snapshot.docs.map((product)=> { return {
+         
+          ...product.data(),
+         ids: product.id, 
+        }
+      }).filter((product)=>product.category.toLowerCase()===searchValue.toLowerCase() ||product.name.toLowerCase()===searchValue.toLowerCase())
+      setProducts(allPost)
+      console.log(allPost)
     })
-    setProducts(allPost)
-   
-  })
-  },[])
- 
+    },[searchValue])
+  
 
   return (
     <div className="postParentDiv">
       <div className="moreView">
         <div className="heading">
-          <span>Quick Menu</span>
-          <span>View more</span>
+          <span>Here is Results for "{searchValue}"</span>
+          <span onClick={()=>setStatus(true)}>View all</span>
+          
         </div>
         <div className="cards">
 
         {products.map((product)=>
         
         {return( <div
-            className="card" onClick={()=>{setPostDetails(product);
+            className="card" onClick={()=>{setPostDetails(product); console.log(product);
              
               history.push("/View")}}
-              
           >
          
             <div className="favorite">
@@ -70,7 +69,7 @@ function Posts() {
       </div>
     
     </div>
-  );
+  )
 }
 
-export default Posts;
+export default Searchbar

@@ -162,3 +162,9 @@
     display: none;
   }
 }
+.rounded-pill{margin-right: 60px !important;
+display: flex;}
+.logout  {
+  cursor: pointer;
+}
+.user{cursor: pointer;}
